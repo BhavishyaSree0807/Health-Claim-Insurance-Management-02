@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - InsurPilot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Header */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem 1.5rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #495057;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #dc3545;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .user-role {
+            background-color: #dc3545;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #495057;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .user-dropdown a:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background-color: #fff;
+            border-right: 1px solid #dee2e6;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-280px);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background-color: #ffeaa7;
+            color: #d63031;
+        }
+
+        .menu-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .menu-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .submenu-toggle {
+            transition: transform 0.3s ease;
+        }
+
+        .submenu-toggle.rotated {
+            transform: rotate(90deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .submenu.expanded {
+            max-height: 300px;
+        }
+
+        .submenu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1.5rem 0.5rem 3.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .submenu-link:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-header {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr);} }
+        @media (max-width: 576px) { .stats-grid { grid-template-columns: 1fr;} }
+        .stat-card { background:#fff; border-radius:12px; padding:1rem 1.25rem; box-shadow: 0 4px 10px rgba(0,0,0,.06); display:flex; align-items:center; gap:.75rem; }
+        .stat-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.25rem; }
+        .ic-users { background: #0d6efd; }
+        .ic-policies { background: #20c997; }
+        .ic-claims { background: #6f42c1; }
+        .ic-tickets { background: #fd7e14; }
+        .stat-value { font-size:1.4rem; font-weight:700; margin:0; }
+        .stat-label { margin:0; color:#6c757d; font-size:.9rem; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-280px);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .header-right .user-name {
+                display: none;
+            }
+        }
+
+        .system-alerts {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="logo">
+              
+                <span>InsurPilot</span>
+               
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info" onclick="toggleUserDropdown()">
+                <i class="bi bi-person-circle"></i>
+                <span class="user-name" th:text="${session.currentSession.userName}"></span>
+                <span class="user-role">ADMIN</span>
+                <div class="user-dropdown" id="userDropdown">
+                   
+                   
+                    <a href="/user/logout">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="/user/adminDashboard" class="menu-link active">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="menu-text">Admin Dashboard</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <button class="menu-link" onclick="toggleSubmenu('userSubmenu')">
+                    <i class="bi bi-people-fill"></i>
+                    <span class="menu-text">User Management</span>
+                    <i class="bi bi-chevron-right submenu-toggle"></i>
+                </button>
+                <div class="submenu" id="userSubmenu">
+                    <a href="/api/admin/users/all" class="submenu-link">
+                        <i class="bi bi-person-lines-fill"></i> All Users
+                    </a>
+                </div>
+            </li>
+
+            <li class="menu-item">
+                <button class="menu-link" onclick="toggleSubmenu('policySubmenu')">
+                    <i class="bi bi-shield-check"></i>
+                    <span class="menu-text">Policy Management</span>
+                    <i class="bi bi-chevron-right submenu-toggle"></i>
+                </button>
+                <div class="submenu" id="policySubmenu">
+                    <a href="/api/admin/policies/all" class="submenu-link">
+                        <i class="bi bi-list-ul"></i> All Policies
+                    </a>
+                </div>
+            </li>
+
+            <li class="menu-item">
+                <button class="menu-link" onclick="toggleSubmenu('claimSubmenu')">
+                    <i class="bi bi-clipboard-data"></i>
+                    <span class="menu-text">Claim Management</span>
+                    <i class="bi bi-chevron-right submenu-toggle"></i>
+                </button>
+                <div class="submenu" id="claimSubmenu">
+                    <a href="/api/admin/claims/all" class="submenu-link">
+                        <i class="bi bi-list-ul"></i> All Claims
+                    </a>
+                </div>
+            </li>
+
+            <li class="menu-item">
+                <button class="menu-link" onclick="toggleSubmenu('supportSubmenu')">
+                    <i class="bi bi-headset"></i>
+                    <span class="menu-text">Support Management</span>
+                    <i class="bi bi-chevron-right submenu-toggle"></i>
+                </button>
+                <div class="submenu" id="supportSubmenu">
+                    <a href="/api/admin/support/all-tickets" class="submenu-link">
+                        <i class="bi bi-ticket-perforated"></i> All Tickets
+                    </a>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1><i class="bi bi-shield-shaded me-3"></i>Admin Control Center</h1>
+            <p>Welcome, <span th:text="${session.currentSession.userName}"></span>! Complete system management and oversight at your fingertips.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon ic-users"><i class="bi bi-people-fill"></i></div>
+                <div>
+                    <p class="stat-value" th:text="${totalUsers}">0</p>
+                    <p class="stat-label">Total Users</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon ic-policies"><i class="bi bi-shield-check"></i></div>
+                <div>
+                    <p class="stat-value" th:text="${totalPolicies}">0</p>
+                    <p class="stat-label">Total Policies</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon ic-claims"><i class="bi bi-clipboard-data"></i></div>
+                <div>
+                    <p class="stat-value" th:text="${totalClaims}">0</p>
+                    <p class="stat-label">Total Claims</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon ic-tickets"><i class="bi bi-ticket-perforated"></i></div>
+                <div>
+                    <p class="stat-value" th:text="${totalTickets}">0</p>
+                    <p class="stat-label">Total Support Tickets</p>
+                </div>
+            </div>
+        </div>
+
+        
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        function toggleSubmenu(submenuId) {
+            const submenu = document.getElementById(submenuId);
+            const toggle = event.target.querySelector('.submenu-toggle');
+            
+            submenu.classList.toggle('expanded');
+            if (toggle) {
+                toggle.classList.toggle('rotated');
+            }
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userInfo = document.querySelector('.user-info');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userInfo.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Auto-close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target) &&
+                !sidebar.classList.contains('collapsed')) {
+                toggleSidebar();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+            }
+        });
+
+        // Auto-refresh admin dashboard every 2 minutes for real-time updates
+        setInterval(() => {
+            console.log('Admin dashboard refreshed for real-time updates');
+            // You can implement AJAX calls here to update statistics and alerts
+        }, 120000);
+    </script>
+</body>
+</html>

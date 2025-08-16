@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Error</title>
+	<style>
+		:root { --bg-start:#eaf2ff; --bg-end:#ffffff; --card-bg:#ffffff; --text:#1f2937; --muted:#9ca3af; --primary:#1d4ed8; --primary-contrast:#ffffff; --border:#fecaca; --shadow:0 6px 20px rgba(17,24,39,0.06); --error:#b91c1c; }
+		*, *::before, *::after { box-sizing: border-box; }
+		body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; margin: 0; color: var(--text); background: linear-gradient(180deg, var(--bg-start), var(--bg-end)); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+		.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; width: 100%; max-width: 560px; box-shadow: var(--shadow); }
+		h1 { font-size: 24px; font-weight: 700; margin: 0 0 20px 0; letter-spacing: 0.2px; color: var(--error); }
+		p { margin: 8px 0; font-size: 14px; color: var(--error); }
+		.nav a { color: var(--primary); text-decoration: none; font-weight: 600; }
+	</style>
+</head>
+<body>
+	<h1>Something went wrong</h1>
+	<div class="card">
+		<p th:text="${error}">An error occurred.</p>
+	</div>
+	<p class="nav" style="margin-top:16px"><a href="/documents/upload">Back to Upload</a></p>
+</body>
+</html> 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>All Claims - Admin</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		.header-gradient{background:linear-gradient(135deg,#6f42c1,#0dcaf0);color:#fff;border-radius:.75rem;padding:1.25rem 1.5rem}
+		.search-input{max-width:360px}
+		.table thead th{white-space:nowrap}
+	</style>
+</head>
+<body class="bg-light">
+	<div class="container py-4">
+		<div class="d-flex justify-content-between align-items-center mb-3 header-gradient">
+			<div>
+				<h3 class="mb-0">All Claims</h3>
+				<small class="opacity-75">Full list of claims with status</small>
+			</div>
+			<div class="d-flex gap-2">
+				<input id="claimSearch" type="text" class="form-control form-control-sm search-input" placeholder="Search by IDs or status">
+				<a href="/user/adminDashboard" class="btn btn-outline-light btn-sm">Back to Dashboard</a>
+			</div>
+		</div>
+		<div class="card shadow-sm">
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-striped table-hover align-middle mb-0" id="claimsTable">
+						<thead class="table-light">
+							<tr>
+								<th>User ID</th>
+								<th>Policy ID</th>
+								<th>Claim ID</th>
+								<th>Claim Amount</th>
+								<th>Claim Date</th>
+								<th>Claim Status</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="c : ${claims}">
+								<td th:text="${c.adjusterId}">1</td>
+								<td th:text="${c.policyId}">101</td>
+								<td th:text="${c.claimId}">5001</td>
+								<td th:text="${#numbers.formatDecimal(c.claimAmount,1,2)}">0.00</td>
+								<td th:text="${c.claimDate}">2025-01-01</td>
+								<td>
+									<span class="badge bg-secondary" th:text="${c.claimStatus}">PENDING</span>
+								</td>
+							</tr>
+							<tr th:if="${claims == null or #lists.isEmpty(claims)}">
+								<td colspan="6" class="text-center text-muted py-4">No claims found.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		const claimSearch=document.getElementById('claimSearch');
+		claimSearch?.addEventListener('input',()=>{
+			const term=claimSearch.value.toLowerCase();
+			for(const row of document.querySelectorAll('#claimsTable tbody tr')){
+				const text=row.innerText.toLowerCase();
+				row.style.display=text.includes(term)?'':'none';
+			}
+		});
+	</script>
+</body>
+</html> 

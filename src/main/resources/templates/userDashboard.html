@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - InsurPilot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root { --header-grad: linear-gradient(135deg, #6f42c1 0%, #0d6efd 100%); --card-shadow: 0 10px 24px rgba(0,0,0,.08); --sidebar-width: 280px; }
+        body { background: #f5f7fb; }
+        .header { background: var(--header-grad); color: #fff; padding: 1rem 1.5rem; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: 0 6px 20px rgba(13,110,253,.25); }
+        .header .logo { font-weight: 700; letter-spacing: .3px; display: flex; align-items: center; gap: .5rem; }
+        .header .logo i { font-size: 1.4rem; }
+        .menu-toggle { background: rgba(255,255,255,.15); border: 0; color: #fff; border-radius: .5rem; padding: .35rem .6rem; }
+        .user-info { display: flex; align-items: center; gap: .5rem; position: relative; cursor: pointer; }
+        .user-role { background: rgba(255,255,255,.15); color: #fff; padding: .15rem .5rem; border-radius: 12px; font-size: .75rem; font-weight: 600; }
+        .user-dropdown { position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #e9ecef; border-radius: .75rem; box-shadow: var(--card-shadow); min-width: 180px; display: none; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display: flex; align-items: center; gap: .5rem; padding: .65rem .9rem; color: #495057; text-decoration: none; border-bottom: 1px solid #f1f3f5; }
+        .user-dropdown a:last-child { border-bottom: 0; }
+        .user-dropdown a:hover { background: #f8f9fa; }
+
+        .sidebar { position: fixed; top: 64px; left: 0; width: var(--sidebar-width); height: calc(100vh - 64px); background: #ffffff; border-right: 1px solid #e9ecef; padding: 1rem 0; overflow-y: auto; transition: transform .3s ease; z-index: 999; }
+        .sidebar.collapsed { transform: translateX(calc(-1 * var(--sidebar-width))); }
+        .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+        .menu-item { margin-bottom: .35rem; }
+        .menu-link { display: flex; align-items: center; gap: .75rem; padding: .7rem 1.25rem; color: #6c757d; text-decoration: none; transition: background .2s ease, color .2s ease; }
+        .menu-link:hover, .menu-link.active { background: #f3f7ff; color: #0d6efd; }
+        .submenu { max-height: 0; overflow: hidden; transition: max-height .3s ease; background: #f8f9fb; }
+        .submenu.expanded { max-height: 300px; }
+        .submenu-link { display: block; padding: .55rem 1.25rem .55rem 3rem; color: #6c757d; text-decoration: none; }
+        .submenu-link:hover { background: #eef4ff; color: #0d6efd; }
+
+        .main { margin-left: var(--sidebar-width); margin-top: 64px; padding: 2rem; transition: margin-left .3s ease; }
+        .main.expanded { margin-left: 0; }
+
+        .welcome { background: #fff; border-radius: 16px; box-shadow: var(--card-shadow); padding: 1.2rem 1.5rem; margin-bottom: 1.25rem; }
+        .welcome h1 { font-size: 1.6rem; color: #343a40; margin: 0; }
+        .welcome p { color: #6c757d; margin: .25rem 0 0; }
+
+        .stats { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+        .stat { grid-column: span 4; background: #fff; border-radius: 14px; box-shadow: var(--card-shadow); padding: 1rem 1.25rem; display: flex; align-items: center; gap: .75rem; }
+        .stat .icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 10px; font-size: 1.2rem; }
+        .s-blue { background: #eef4ff; color: #0d6efd; }
+        .s-green { background: #eaf7ef; color: #28a745; }
+        .s-orange { background: #fff3e8; color: #fd7e14; }
+        .stat .label { color: #6c757d; margin: 0; font-size: .9rem; }
+        .stat .value { margin: 0; font-weight: 800; color: #343a40; font-size: 1.15rem; }
+
+        .card-elev { border: none; border-radius: 14px; box-shadow: var(--card-shadow); }
+        .table thead th { background: #f1f5ff; color: #495057; border-bottom: 0; }
+        @media (max-width: 992px) { .stat { grid-column: span 6; } }
+        @media (max-width: 768px) { .stat { grid-column: span 12; } }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+            <button class="menu-toggle" onclick="toggleSidebar()"><i class="bi bi-list"></i></button>
+            <div class="logo"><span>InsurPilot</span></div>
+        </div>
+            <div class="user-info" onclick="toggleUserDropdown()">
+                <i class="bi bi-person-circle"></i>
+                <span class="user-name" th:text="${userName}"></span>
+                <span class="user-role">USER</span>
+                <div class="user-dropdown" id="userDropdown">
+                <a href="/user/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-item"><a href="#" class="menu-link active"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a></li>
+            <li class="menu-item">
+                <a href="javascript:void(0)" class="menu-link" onclick="toggleSubmenu('policySub')"><i class="bi bi-shield-check"></i><span>Policy Management</span><i class="bi bi-chevron-right ms-auto"></i></a>
+                <div class="submenu" id="policySub">
+                    <a href="/policy/downloads" class="submenu-link"><i class="bi bi-file-earmark-text me-2"></i>Policy Downloads</a>
+                    <a href="/policy/all" class="submenu-link"><i class="bi bi-list-ul me-2"></i>My Policies</a>
+                </div>
+            </li>
+            <li class="menu-item">
+                <a href="javascript:void(0)" class="menu-link" onclick="toggleSubmenu('claimSub')"><i class="bi bi-clipboard-data"></i><span>Claim Management</span><i class="bi bi-chevron-right ms-auto"></i></a>
+                <div class="submenu" id="claimSub">
+                    <a href="/claims/new" class="submenu-link"><i class="bi bi-plus-circle me-2"></i>Create Claim</a>
+                    <a href="/claims/list" class="submenu-link"><i class="bi bi-list-ul me-2"></i>My Claims</a>
+                </div>
+            </li>
+            <li class="menu-item">
+                <a href="javascript:void(0)" class="menu-link" onclick="toggleSubmenu('docSub')"><i class="bi bi-files"></i><span>Document Management</span><i class="bi bi-chevron-right ms-auto"></i></a>
+                <div class="submenu" id="docSub">
+                    <a href="/documents/upload" class="submenu-link"><i class="bi bi-upload me-2"></i>Upload Documents</a>
+                    <a href="/documents/all" class="submenu-link"><i class="bi bi-collection me-2"></i>My Documents</a>
+                </div>
+            </li>
+            <li class="menu-item">
+                <a href="javascript:void(0)" class="menu-link" onclick="toggleSubmenu('supportSub')"><i class="bi bi-headset"></i><span>Support Management</span><i class="bi bi-chevron-right ms-auto"></i></a>
+                <div class="submenu" id="supportSub">
+                    <a href="/supportticket/ticket/new" class="submenu-link"><i class="bi bi-plus-circle me-2"></i>Create Support Ticket</a>
+                    <a href="/supportticket/tickets" class="submenu-link"><i class="bi bi-ticket-perforated me-2"></i>My Tickets</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main" class="main">
+        <div class="welcome">
+            <h1>Welcome, <span th:text="${session.currentSession.userName}"></span></h1>
+            <p>Overview of your account at a glance.</p>
+        </div>
+
+        <section class="stats">
+            <div class="stat">
+                <div class="icon s-blue"><i class="bi bi-shield-check"></i></div>
+                <div>
+                    <p class="label">Total Policies</p>
+                    <p class="value" th:text="${#lists.size(recentPolicies)}">0</p>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="icon s-green"><i class="bi bi-ticket-detailed"></i></div>
+                <div>
+                    <p class="label">Support Tickets</p>
+                    <p class="value" th:text="${ticketCount}">0</p>
+                </div>
+            </div>
+            <div class="stat">
+                <div class="icon s-orange"><i class="bi bi-calendar3"></i></div>
+                <div>
+                    <p class="label">User ID</p>
+                    <p class="value" th:text="${session.currentSession.userId}">-</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card card-elev">
+            <div class="card-body p-0">
+                <div class="p-3 border-bottom"><strong>Recent Policies</strong></div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Policy ID</th>
+                                <th class="px-3">Policy Number </th>
+                                <th>Coverage</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${recentPolicies == null or #lists.isEmpty(recentPolicies)}">
+                                <td colspan="5" class="text-center text-muted">No policies yet.</td>
+                            </tr>
+                            <tr th:each="p : ${recentPolicies}">
+                                <td th:text="${p.policyId}"></td>
+                                <td class="px-3" th:text="${p.policyNumber}"></td>
+                                
+                                <td><i class="bi bi-currency-rupee"></i> <span th:text="${p.coverageAmount}"></span></td>
+                                <td>
+                                    <span class="badge" th:classappend="${p.policyStatus.name()}=='ACTIVE' ? ' bg-success-subtle text-success' : (${p.policyStatus.name()}=='INACTIVE' ? ' bg-secondary-subtle text-secondary' : ' bg-danger-subtle text-danger')" th:text="${p.policyStatus}"></span>
+                                </td>
+                                <td th:text="${p.createdDate}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+   </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() { const sidebar = document.getElementById('sidebar'); const main = document.getElementById('main'); sidebar.classList.toggle('collapsed'); main.classList.toggle('expanded'); }
+        function toggleSubmenu(id) { const sub = document.getElementById(id); sub.classList.toggle('expanded'); }
+        function toggleUserDropdown() { document.getElementById('userDropdown').classList.toggle('show'); }
+        document.addEventListener('click', function (e) { const userInfo = document.querySelector('.user-info'); const dropdown = document.getElementById('userDropdown'); if (userInfo && !userInfo.contains(e.target)) dropdown.classList.remove('show'); });
+        window.addEventListener('resize', function () { const sidebar = document.getElementById('sidebar'); const main = document.getElementById('main'); if (window.innerWidth <= 768) { sidebar.classList.add('collapsed'); main.classList.add('expanded'); } else { sidebar.classList.remove('collapsed'); main.classList.remove('expanded'); } });
+    </script>
+</body>
+</html> 

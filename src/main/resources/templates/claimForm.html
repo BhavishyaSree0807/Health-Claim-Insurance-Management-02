@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Create Claim</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+	<style>
+		body { background: #f5f7fb; }
+		.header { background: linear-gradient(135deg, #fd7e14 0%, #dc3545 100%); color: #fff; padding: 2rem 0; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 8px 24px rgba(220,53,69,.25); }
+		.header h1 { font-weight: 700; }
+		.container-narrow { max-width: 760px; }
+		.card-elev { border: none; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,.06); }
+	</style>
+</head>
+<body>
+	<section class="header mb-4">
+		<div class="container container-narrow d-flex align-items-center gap-3">
+			<i class="bi bi-clipboard-plus" style="font-size: 2rem"></i>
+			<div>
+				<h1 class="mb-1">Create Claim</h1>
+				<p class="mb-0">Submit a new claim for a policy.</p>
+			</div>
+		</div>
+	</section>
+
+	<div class="container container-narrow">
+		<div th:if="${submittedClaim}" class="alert alert-success">
+			<i class="bi bi-check-circle-fill me-1"></i>
+			Claim submitted successfully with ID: <span th:text="${submittedClaim.claimId}"></span>
+		</div>
+		<div th:if="${errorMessage}" class="alert alert-danger">
+			<i class="bi bi-exclamation-triangle-fill me-1"></i>
+			<span th:text="${errorMessage}"></span>
+		</div>
+
+		<form th:action="@{/claims}" th:object="${claim}" method="post" class="card card-elev p-4 bg-white">
+			
+			<div class="mb-4">
+				<label class="form-label">User ID</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+					<input type="number" class="form-control" th:field="*{adjusterId}" required min="1" readonly placeholder="Will be set to your User ID" />
+				</div>
+			</div>
+			
+			<div class="mb-3">
+				<label class="form-label">Policy ID</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-hash"></i></span>
+					<input type="number" class="form-control" th:field="*{policyId}" required min="1" />
+				</div>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Claim Amount</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
+					<input type="number" step="0.01" class="form-control" th:field="*{claimAmount}" required min="1000" />
+				</div>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Claim Date</label>
+				<div class="input-group">
+					<span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+					<input type="date" class="form-control" th:field="*{claimDate}" />
+				</div>
+			</div>
+			
+			<div class="d-flex justify-content-end gap-2">
+				<a th:href="${session.currentSession != null and session.currentSession.role.name() == 'AGENT'} ? @{/user/agentDashboard} : @{/user/userDashboard}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back</a>
+				<button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i> Submit Claim</button>
+			</div>
+		</form>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

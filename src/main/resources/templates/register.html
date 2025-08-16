@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Signup</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet" />
+<style>
+  body {
+  background: linear-gradient(180deg, rgb(233, 219, 219), rgb(203, 203, 232));
+}
+
+.signup-container {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 50px 15px;
+}
+
+.form-box {
+	background-color: white;
+	padding: 40px;
+	border-radius: 12px;
+	box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+	font-size: 2.5rem;
+	font-weight: 700;
+}
+
+.subtitle {
+	color: #0d6efd;
+	font-size: 1.5rem;
+	font-weight: 600;
+}
+
+.description {
+	color: #6c757d;
+}
+
+.btn-custom {
+	background-color: #0d6efd;
+	color: white;
+	border-radius: 999px;
+	padding: 10px 0;
+}
+
+.btn-custom:hover {
+	background-color: #0b5ed7;
+}
+
+.form-control {
+	border-radius: 6px;
+}
+
+.text-danger {
+	font-size: 0.875rem;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+</style>
+</head>
+<body>
+
+	<div class="container signup-container">
+		<div class="row align-items-center w-100">
+
+			<!-- Left Side Text -->
+			<div class="col-md-6 text-center text-md-start mb-5">
+				<h1 class="title">InsurPilot</h1>
+				<h3 class="subtitle">Signup</h3>
+				<p class="description">Create your account to submit and manage
+					your health insurance claims online. Secure. Simple. Seamless.</p>
+			</div>
+
+			<!-- Right Side Form -->
+			<div class="col-md-6">
+				<div class="form-box">
+					<form th:action="@{/user/register}" th:object="${user}"
+						method="post">
+
+						<!-- Username -->
+						<div class="mb-3">
+							<label for="userName" class="form-label">Username</label> <input
+								type="text" class="form-control" id="userName"
+								th:field="*{userName}" placeholder="John" />
+							<div class="text-danger" th:if="${#fields.hasErrors('userName')}"
+								th:errors="*{userName}"></div>
+							<div class="text-danger" th:if="${usernameError != null}"
+								th:text="${usernameError}"></div>
+						</div>
+
+						<!-- Role -->
+						<div class="mb-3">
+							<label for="role" class="form-label">Choose Role</label> <select
+								class="form-select" id="role" th:field="*{role}">
+								<option value="" disabled selected>Select role</option>
+								<option value="POLICYHOLDER">User</option>
+								<option value="AGENT">Agent</option>
+								<option value="CLAIM_ADJUSTER">Claim Adjuster</option>
+								<option value="ADMIN">Admin</option>
+							</select>
+							<div class="text-danger" th:if="${#fields.hasErrors('role')}"
+								th:errors="*{role}"></div>
+						</div>
+
+						<!-- Email -->
+						<div class="mb-3">
+							<label for="email" class="form-label">Email Address</label> <input
+								type="email" class="form-control" id="email" th:field="*{email}"
+								placeholder="example@email.com" />
+							<div class="text-danger" th:if="${#fields.hasErrors('email')}"
+								th:errors="*{email}"></div>
+						</div>
+
+						<!-- Password -->
+						<div class="mb-3">
+							<label for="password" class="form-label">Password</label> <input
+								type="password" class="form-control" id="password"
+								th:field="*{password}" placeholder="Password" />
+							<div class="text-danger" th:if="${#fields.hasErrors('password')}"
+								th:errors="*{password}"></div>
+						</div>
+
+						<!-- Confirm Password -->
+						<div class="mb-4">
+							<label for="confirmPassword" class="form-label">Confirm
+								Password</label> <input type="password" class="form-control"
+								id="confirmPassword" name="confirmPassword"
+								placeholder="Confirm Password" />
+							<!-- Optional: Add custom error if you validate this manually -->
+							<div class="text-danger" th:if="${confirmPasswordError != null}"
+								th:text="${confirmPasswordError}"></div>
+						</div>
+
+						<div class="d-grid mb-3">
+							<button type="submit" class="btn btn-custom">Sign up</button>
+						</div>
+
+						<div class="text-center">
+							<p class="mb-1">
+								Already have an account? <a th:href="@{/user/select-role}">Login</a>
+							</p>
+							<a th:href="@{/user/home}">Back to Home</a>
+
+						</div>
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

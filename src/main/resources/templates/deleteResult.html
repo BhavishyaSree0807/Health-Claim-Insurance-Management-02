@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Delete Result</title>
+	<style>
+		:root { --bg-start:#eaf2ff; --bg-end:#ffffff; --card-bg:#ffffff; --text:#1f2937; --muted:#6b7280; --primary:#1d4ed8; --primary-contrast:#ffffff; --danger:#e11d48; --border:#e5e7eb; --shadow:0 6px 20px rgba(17,24,39,0.08); }
+		*, *::before, *::after { box-sizing: border-box; }
+		body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 0; color: var(--text); background: linear-gradient(180deg, var(--bg-start), var(--bg-end)); min-height: 100vh; padding: 24px; }
+		.header { display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:16px; }
+		h1 { font-size:22px; margin:0; }
+		.actions-bar { display:flex; gap:8px; align-items:center; }
+		button, .btn { height: 40px; padding: 0 14px; border: none; border-radius: 10px; background: #374151; color: #fff; cursor: pointer; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+		.btn-primary { background: var(--primary); }
+		.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); max-width:720px; margin: 0 auto; }
+		.success { color: #065f46; font-weight: 600; }
+		.error { color: #991b1b; font-weight: 600; }
+	</style>
+</head>
+<body>
+	<div class="header">
+		<h1>Delete Document</h1>
+		<div class="actions-bar">
+			<a href="/documents/all" class="btn">My Documents</a>
+			<button type="button" th:onclick="${session.currentSession != null and session.currentSession.role.name() == 'AGENT'} ? 'window.location.href=\'/user/agentDashboard\'' : 'window.location.href=\'/user/userDashboard\''">Back to Dashboard</button>
+		</div>
+	</div>
+
+	<div class="card">
+		<p th:if="${message}" th:text="${message}" class="success">Document deleted successfully.</p>
+		<p th:if="${error}" th:text="${error}" class="error">Document not found or could not be deleted.</p>
+	</div>
+</body>
+</html> 

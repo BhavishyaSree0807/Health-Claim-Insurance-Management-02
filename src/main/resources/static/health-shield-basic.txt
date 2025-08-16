@@ -1,0 +1,49 @@
+InsurPilot - Health Shield Basic
+
+Overview
+A simple, affordable health insurance plan designed for individuals starting their health coverage journey. Ideal for first-time buyers seeking protection against common hospitalization expenses.
+
+Sum Insured Options
+- ₹3 lakh
+- ₹5 lakh
+
+Key Coverages
+- In-patient hospitalization: Room, nursing, ICU, doctor fees, medicines
+- Day-care procedures: 500+ listed procedures without 24-hour admission requirement
+- Pre-hospitalization: Medical expenses up to 30 days before admission
+- Post-hospitalization: Medical expenses up to 60 days after discharge
+- Ambulance cover: Up to ₹2,000 per hospitalization
+- Cashless treatment: At network hospitals (subject to insurer T&Cs)
+
+Limits & Sub-limits
+- Room rent: Up to single private room
+- ICU: As per policy terms
+
+Waiting Periods
+- Initial waiting period: 30 days (accidents covered from day 1)
+- Specific diseases: 2 years (as listed)
+- Pre-existing diseases (PED): 3 years continuous coverage
+
+Exclusions (Illustrative)
+- Cosmetic or aesthetic treatments
+- Non-prescription supplements and experimental treatments
+- Intentional self-injury and substance abuse
+- Conditions under waiting periods
+
+Eligibility
+- Entry age: 18 to 65 years
+- Renewable for life
+
+Claims Process (High-level)
+1) Cashless: Inform TPA/hospital desk before admission; submit KYC and forms
+2) Reimbursement: Submit discharge summary, bills, prescriptions within 15 days
+
+Helpful Tips
+- Carry e-card for cashless hospitalization
+- Keep original bills for reimbursement claims
+
+Contact
+Support: support@insurpilot.example
+Toll-free: 1800-000-000
+
+Note: This brochure is for information only. Please refer to the policy wording for exact terms, conditions, and exclusions. 

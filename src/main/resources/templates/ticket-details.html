@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Ticket Details</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+	<style>
+		body { background: #f5f7fb; }
+		.header { background: linear-gradient(135deg, #0d6efd 0%, #20c997 100%); color: #fff; padding: 2rem 0; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 8px 24px rgba(13,110,253,.25); }
+		.header h1 { font-weight: 700; }
+		.container-narrow { max-width: 900px; }
+		.card-elev { border: none; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,.06); }
+		.label { color: #6c757d; margin: 0; font-size: .9rem; }
+		.value { margin: 0; font-weight: 700; color: #343a40; }
+		.badge-status { font-weight: 600; letter-spacing: .2px; }
+	</style>
+</head>
+<body>
+	<section class="header mb-4">
+		<div class="container container-narrow d-flex align-items-center gap-3">
+			<i class="bi bi-ticket-perforated" style="font-size: 2rem"></i>
+			<div>
+				<h1 class="mb-1">Ticket Details</h1>
+				<p class="mb-0">View details of your support ticket.</p>
+			</div>
+		</div>
+	</section>
+
+	<div class="container container-narrow">
+		<div class="card card-elev p-4" th:if="${ticket}">
+			<div class="row g-4">
+				<div class="col-md-6">
+					<p class="label">Ticket ID</p>
+					<p class="value" th:text="${ticket.ticketId}"></p>
+				</div>
+				<div class="col-md-6">
+					<p class="label">User ID</p>
+					<p class="value" th:text="${ticket.userId}"></p>
+				</div>
+				<div class="col-md-6">
+					<p class="label">Status</p>
+					<p class="value">
+						<span class="badge badge-status" th:classappend="${ticket.ticketStatus}=='OPEN' ? ' bg-warning-subtle text-warning' : (${ticket.ticketStatus}=='INPROGRESS' ? ' bg-primary-subtle text-primary' : ' bg-success-subtle text-success')" th:text="${ticket.ticketStatus}"></span>
+					</p>
+				</div>
+				<div class="col-md-6">
+					<p class="label">Created</p>
+					<p class="value" th:text="${ticket.createdDate}"></p>
+				</div>
+				<div class="col-12">
+					<p class="label">Description</p>
+					<p class="value" th:text="${ticket.issueDescription}"></p>
+				</div>
+			</div>
+		</div>
+
+		<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+		<div class="text-center mt-3">
+			<a href="/supportticket/tickets" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back</a>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

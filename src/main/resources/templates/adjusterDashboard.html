@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Adjuster Dashboard - InsurPilot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* Header */
+        .header {
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem 1.5rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #495057;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .user-role {
+            background-color: #28a745;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            display: none;
+            z-index: 1001;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: #495057;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .user-dropdown a:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 280px;
+            height: calc(100vh - 70px);
+            background-color: #fff;
+            border-right: 1px solid #dee2e6;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-280px);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .menu-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .menu-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .submenu-toggle {
+            transition: transform 0.3s ease;
+        }
+
+        .submenu-toggle.rotated {
+            transform: rotate(90deg);
+        }
+
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .submenu.expanded {
+            max-height: 300px;
+        }
+
+        .submenu-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1.5rem 0.5rem 3.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .submenu-link:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 70px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 0;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-header {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+     
+       
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-280px);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .header-right .user-name {
+                display: none;
+            }
+        }
+
+       
+
+        .restricted-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="logo">
+                <i class="bi bi-calculator"></i>
+                <span>InsurPilot</span>
+                
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info" onclick="toggleUserDropdown()">
+                <i class="bi bi-person-circle"></i>
+                <span class="user-name" th:text="${session.currentSession.userName}"></span>
+                <span class="user-role">CLAIM_ADJUSTER</span>
+                <div class="user-dropdown" id="userDropdown">
+                     <a href="/user/logout">
+                         <i class="bi bi-box-arrow-right"></i> Logout
+                     </a>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="/api/adjuster/dashboard" class="menu-link active">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="menu-text">Adjuster Dashboard</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <button class="menu-link" onclick="toggleSubmenu('assignedClaimsSubmenu')">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span class="menu-text">Assigned Claims</span>
+                    <i class="bi bi-chevron-right submenu-toggle"></i>
+                </button>
+                <div class="submenu" id="assignedClaimsSubmenu">
+                   <a href="/api/adjuster/claims/all-assigned" class="submenu-link">
+                        <i class="bi bi-list-ul"></i> All Claims
+                    </a>
+                    <a href="/api/adjuster/claims/completed" class="submenu-link">
+                        <i class="bi bi-check-square"></i> Completed Adjustments
+                    </a>
+                </div>
+            </li>
+
+            <li class="menu-item">
+                <button class="menu-link" onclick="toggleSubmenu('documentSubmenu')">
+                    <i class="bi bi-files"></i>
+                    <span class="menu-text">Claim Documents</span>
+                    <i class="bi bi-chevron-right submenu-toggle"></i>
+                </button>
+                <div class="submenu" id="documentSubmenu">
+                    <a href="/api/adjuster/documents/verified" class="submenu-link">
+                        <i class="bi bi-shield-check"></i> Verified Documents
+                    </a>
+                    <a href="/api/adjuster/documents/review" class="submenu-link">
+                        <i class="bi bi-file-earmark-check"></i> Document Review
+                    </a>
+                </div>
+            </li>
+       
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+           
+            <h2>Welcome, <span th:text="${session.currentSession.userName}"></span>!</h3><p> Adjust claim amounts for approved claims with verified documents.</p>
+        </div>
+
+        <!-- Restricted Access Notice -->
+        <div class="restricted-notice">
+            <i class="bi bi-info-circle me-2"></i>
+            <strong>Access Restrictions:</strong> You can only adjust claim amounts for claims that are <strong>APPROVED</strong> and have <strong>VERIFIED DOCUMENTS</strong>. All adjustments are logged and audited.
+        </div>
+
+       
+          
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        function toggleSubmenu(submenuId) {
+            const submenu = document.getElementById(submenuId);
+            const toggle = event.target.querySelector('.submenu-toggle');
+            
+            submenu.classList.toggle('expanded');
+            if (toggle) {
+                toggle.classList.toggle('rotated');
+            }
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userInfo = document.querySelector('.user-info');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userInfo.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Auto-close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target) &&
+                !sidebar.classList.contains('collapsed')) {
+                toggleSidebar();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+            }
+        });
+
+        // Form validation for adjustment amounts
+        document.querySelectorAll('.amount-input').forEach(input => {
+            input.addEventListener('input', function() {
+                const max = parseFloat(this.getAttribute('max'));
+                const value = parseFloat(this.value);
+                
+                if (value > max) {
+                    this.setCustomValidity(`Amount cannot exceed policy coverage of ₹${max.toLocaleString('en-IN')}`);
+                } else if (value < 0) {
+                    this.setCustomValidity('Amount cannot be negative');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        });
+
+        // Confirmation for significant adjustments
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const input = this.querySelector('.amount-input');
+                const originalAmount = parseFloat(input.getAttribute('th:value') || input.defaultValue);
+                const adjustedAmount = parseFloat(input.value);
+                const reduction = ((originalAmount - adjustedAmount) / originalAmount) * 100;
+                
+                if (reduction > 20) {
+                    if (!confirm(`You are reducing the claim amount by ${reduction.toFixed(1)}%. This is a significant adjustment. Are you sure you want to proceed?`)) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                
+                // Show loading state
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Processing...';
+                submitBtn.disabled = true;
+            });
+        });
+
+        // Auto-refresh dashboard every 5 minutes for new assignments
+        setInterval(() => {
+            console.log('Checking for new claim assignments...');
+            // Implement AJAX call to check for new assignments
+        }, 300000);
+    </script>
+</body>
+</html>

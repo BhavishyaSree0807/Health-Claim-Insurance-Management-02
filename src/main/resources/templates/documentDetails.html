@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Document Details</title>
+	<style>
+		:root { --bg-start:#eaf2ff; --bg-end:#ffffff; --card-bg:#ffffff; --text:#1f2937; --muted:#6b7280; --primary:#1d4ed8; --primary-contrast:#ffffff; --danger:#e11d48; --border:#e5e7eb; --shadow:0 6px 20px rgba(17,24,39,0.08); }
+		*, *::before, *::after { box-sizing: border-box; }
+		body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 0; color: var(--text); background: linear-gradient(180deg, var(--bg-start), var(--bg-end)); min-height: 100vh; padding: 24px; }
+		.header { display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:16px; }
+		h1 { font-size:22px; margin:0; }
+		.actions-bar { display:flex; gap:8px; align-items:center; }
+		button, .btn { height: 40px; padding: 0 14px; border: none; border-radius: 10px; background: #374151; color: #fff; cursor: pointer; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+		.btn-primary { background: var(--primary); }
+		.danger { background: var(--danger); }
+		.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); max-width:720px; margin: 0 auto; }
+		.field { margin: 10px 0; font-size: 14px; display:grid; grid-template-columns: 160px 1fr; gap:8px; }
+		.label { font-weight: 600; color: #374151; }
+		.inline-actions { display:flex; gap:8px; margin-top:16px; }
+	</style>
+</head>
+<body>
+	<div class="header">
+		<h1>Document Details</h1>
+		<div class="actions-bar">
+			<a th:href="@{'/documents/' + ${document.documentId} + '/file'}" class="btn btn-primary" target="_blank">View File</a>
+			<a href="/documents/all" class="btn">My Documents</a>
+			<button type="button" th:onclick="${session.currentSession != null and session.currentSession.role.name() == 'AGENT'} ? 'window.location.href=\'/user/agentDashboard\'' : 'window.location.href=\'/user/userDashboard\''">Back to Dashboard</button>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="field"><span class="label">Document ID</span> <span th:text="${document.documentId}">1</span></div>
+		<div class="field"><span class="label">Claim ID</span> <span th:text="${document.claimId}">101</span></div>
+		<div class="field"><span class="label">Name</span> <span th:text="${document.documentName}">Discharge Summary</span></div>
+		<div class="field"><span class="label">Path</span> <span th:text="${document.documentPath}">file.pdf</span></div>
+		<div class="field"><span class="label">Type</span> <span th:text="${document.documentType}">PDF</span></div>
+
+		<div class="inline-actions">
+			<button class="btn-primary" type="button" th:onclick="|window.open('/documents/${document.documentId}/file','_blank')|">Open</button>
+			<button class="danger" type="button" th:onclick="|deleteDoc(${document.documentId})|">Delete</button>
+		</div>
+	</div>
+
+	<script>
+		function deleteDoc(id){
+			if(!confirm('Delete document #' + id + '?')) return;
+			fetch('/documents/delete/' + encodeURIComponent(id), { method: 'DELETE' })
+				.then(r => r.text())
+				.then(html => { document.open(); document.write(html); document.close(); })
+				.catch(() => alert('Delete failed'));
+		}
+	</script>
+</body>
+</html> 

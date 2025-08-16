@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Claim Adjuster Login - InsurShield</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+ 
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 50px 15px;
+    }
+ 
+    .login-box {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+ 
+    .heading {
+      font-weight: 700;
+      font-size: 2.5rem;
+    }
+ 
+    .sub-heading {
+      color: #0d6efd;
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 1.2;
+    }
+ 
+    .description {
+      color: #6c757d;
+      font-size: 15px;
+    }
+ 
+    .btn-login {
+      background-color: #0d6efd;
+      color: white;
+      border-radius: 999px;
+      padding: 10px 0;
+    }
+ 
+    .btn-login:hover {
+      background-color: #0b5ed7;
+    }
+ 
+    .form-control {
+      background-color: #e9f0ff;
+      border-radius: 6px;
+    }
+ 
+    a {
+      text-decoration: none;
+    }
+ 
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+ 
+  <div class="container login-container">
+    <div class="row align-items-center w-100">
+      <!-- Left Text Section -->
+      <div class="col-md-6 text-center text-md-start mb-5 mb-md-0">
+        <h1 class="heading">Welcome<br>Adjuster</h1>
+        <h3 class="sub-heading">Log in to<br>Evaluate Claims</h3>
+        <p class="description">
+          Claim adjusters are responsible for reviewing, validating, and processing approved claims. Access your dashboard securely.
+        </p>
+      </div>
+ 
+      <!-- Right Login Form -->
+      <div class="col-md-6">
+        <div class="login-box">
+       <form method="POST" th:action="@{/user/login}">
+
+           <div class="mb-3">
+            <label for="username" class="form-label">Adjuster</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username"  required />
+           
+ </div>
+            <div class="mb-4">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Password"  />
+            </div>
+          
+            <div class="mb-4">
+              <label for="role" class="form-label fw">Role</label>
+              <select class="form-select" id="role" name="role" required>
+                <option value="  CLAIM_ADJUSTER" selected>  CLAIM_ADJUSTER</option>
+              </select>
+              <!-- <div class="form-text">Role is automatically set to USER for standard access</div> -->
+            </div>
+            <div class="d-grid mb-3">
+              <button type="submit" class="btn btn-login">Login</button>
+            </div>
+ 
+            <div class="text-center">
+             <a th:href="@{/user/home}">Back to Home</a>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+</body>
+</html>
+ 

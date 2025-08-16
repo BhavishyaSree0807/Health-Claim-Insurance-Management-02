@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Upload Success</title>
+	<style>
+		:root { --bg-start:#eaf2ff; --bg-end:#ffffff; --card-bg:#ffffff; --text:#1f2937; --muted:#6b7280; --primary:#1d4ed8; --primary-contrast:#ffffff; --border:#e5e7eb; --shadow:0 6px 20px rgba(17,24,39,0.08); }
+		*, *::before, *::after { box-sizing: border-box; }
+		body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; margin: 0; color: var(--text); background: linear-gradient(180deg, var(--bg-start), var(--bg-end)); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+		.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; width: 100%; max-width: 560px; box-shadow: var(--shadow); }
+		h1 { font-size: 24px; font-weight: 700; margin: 0 0 20px 0; letter-spacing: 0.2px; }
+		p { margin: 8px 0; font-size: 14px; color: var(--text); }
+		.row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: end; margin-top: 16px; }
+		input { width: 100%; height: 44px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff; outline: none; transition: border-color .15s ease, box-shadow .15s ease; font-size: 14px; }
+		input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+		button { height: 44px; padding: 0 14px; border: none; border-radius: 10px; background: var(--primary); color: var(--primary-contrast); cursor: pointer; font-weight: 600; letter-spacing: .2px; transition: filter .15s ease, transform .02s ease; }
+		button:hover { filter: brightness(0.95); }
+		button:active { transform: translateY(1px); }
+		button.secondary { background:#374151; color:#fff; }
+		.nav a { color: var(--primary); text-decoration: none; font-weight: 600; }
+	</style>
+</head>
+<body>
+	<h1>Upload Result</h1>
+	<div class="card">
+		<p th:text="${message}">Document uploaded successfully.</p>
+
+		<div class="row">
+			<input id="docId" type="number" placeholder="Enter Document ID to view" />
+			<button onclick="const id=document.getElementById('docId').value.trim(); if(id){ window.open('/documents/'+encodeURIComponent(id)+'/file','_blank'); }">View Document</button>
+		</div>
+	</div>
+
+	<p class="nav" style="margin-top:16px"><button type="button" class="secondary" onclick="window.location.href='/user/userDashboard'">Back to Dashboard</button></p>
+</body>
+</html> 

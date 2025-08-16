@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>My Documents</title>
+	<style>
+		:root { --bg-start:#eaf2ff; --bg-end:#ffffff; --card-bg:#ffffff; --text:#1f2937; --muted:#6b7280; --primary:#1d4ed8; --border:#e5e7eb; --shadow:0 6px 20px rgba(17,24,39,0.08); }
+		*, *::before, *::after { box-sizing: border-box; }
+		body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; margin: 0; color: var(--text); background: linear-gradient(180deg, var(--bg-start), var(--bg-end)); min-height: 100vh; padding: 24px; }
+		.header { display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:16px; }
+		h1 { font-size:22px; margin:0; }
+		.actions-bar { display:flex; gap:8px; align-items:center; }
+		button, .btn { height: 40px; padding: 0 14px; border: none; border-radius: 10px; background: #374151; color: #fff; cursor: pointer; font-weight: 600; text-decoration:none; display:inline-flex; align-items:center; gap:8px; }
+		.btn-primary { background: var(--primary); }
+		.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
+		.toolbar { display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center; margin-bottom:12px; }
+		.search { display:flex; gap:8px; }
+		.search input, .search select { height:40px; padding:10px 12px; border:1px solid var(--border); border-radius:10px; width:100%; max-width:280px; }
+		table { width: 100%; border-collapse: collapse; }
+		th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 14px; }
+		th { background: #f9fafb; font-weight: 700; }
+		.badge { display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; background:#eef2ff; color:#3730a3; }
+		.row-actions a { text-decoration:none; color: var(--primary); font-weight:600; }
+		.empty { text-align:center; color:var(--muted); padding:24px 0; }
+	</style>
+</head>
+<body>
+	<div class="header">
+		<h1>My Documents</h1>
+		<div class="actions-bar">
+			<a href="/documents/upload" class="btn btn-primary">Upload</a>
+			<button type="button" th:onclick="${session.currentSession != null and session.currentSession.role.name() == 'AGENT'} ? 'window.location.href=\'/user/agentDashboard\'' : 'window.location.href=\'/user/userDashboard\''">Back to Dashboard</button>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="toolbar">
+			<div class="search">
+				<input id="searchInput" type="text" placeholder="Search by name or path" oninput="filterDocs()" />
+				<select id="typeFilter" onchange="filterDocs()">
+					<option value="">All types</option>
+					<option value="PDF">PDF</option>
+					<option value="JPG">JPG</option>
+					<option value="PNG">PNG</option>
+					<option value="DOC">DOC</option>
+				</select>
+			</div>
+			<div style="text-align:right; color:var(--muted); font-size:13px;" th:text="'Total: ' + ${documents.size()} + ' document(s)'"></div>
+		</div>
+
+		<table id="docsTable">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Claim ID</th>
+					<th>Name</th>
+					<th>Type</th>
+					<th>Path</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${#lists.isEmpty(documents)}">
+					<td class="empty" colspan="6">No documents found</td>
+				</tr>
+				<tr th:each="doc : ${documents}" data-type="[[${doc.documentType}]]">
+					<td th:text="${doc.documentId}">1</td>
+					<td th:text="${doc.claimId}">100</td>
+					<td th:text="${doc.documentName}">Discharge Summary</td>
+					<td><span class="badge" th:text="${doc.documentType}">PDF</span></td>
+					<td th:text="${doc.documentPath}">file.pdf</td>
+					<td class="row-actions"><a th:href="@{'/documents/' + ${doc.documentId} + '/file'}" target="_blank">View</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+		function filterDocs(){
+			const q = (document.getElementById('searchInput').value || '').toLowerCase();
+			const t = document.getElementById('typeFilter').value;
+			const rows = document.querySelectorAll('#docsTable tbody tr');
+			rows.forEach(r => {
+				if(r.querySelector('td.empty')) return; // skip empty row
+				const name = (r.children[2].textContent || '').toLowerCase();
+				const path = (r.children[4].textContent || '').toLowerCase();
+				const type = r.getAttribute('data-type') || '';
+				const matchQ = !q || name.includes(q) || path.includes(q);
+				const matchT = !t || type === t;
+				r.style.display = (matchQ && matchT) ? '' : 'none';
+			});
+		}
+	</script>
+</body>
+</html> 

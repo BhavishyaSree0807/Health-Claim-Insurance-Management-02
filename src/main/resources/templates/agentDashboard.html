@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard - InsurPilot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { margin:0; padding:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fb; }
+
+        /* Header */
+        .header { background: linear-gradient(135deg, #6f42c1 0%, #0d6efd 100%); color:#fff; padding: 1rem 1.5rem; position: fixed; top:0; left:0; right:0; z-index:1000; box-shadow: 0 6px 20px rgba(13,110,253,.25); display:flex; justify-content: space-between; align-items:center; }
+
+        .header-left { display:flex; align-items:center; gap:1rem; }
+        .menu-toggle { background: rgba(255,255,255,.15); border:0; color:#fff; border-radius:.5rem; padding:.35rem .6rem; }
+        .logo { display:flex; align-items:center; gap:.5rem; font-size:1.2rem; font-weight:700; color:#fff; }
+
+        .header-right { display:flex; align-items:center; gap:1rem; }
+
+        .user-info { display:flex; align-items:center; gap:.5rem; position:relative; cursor:pointer; }
+        .user-name { font-weight:600; color:#fff; }
+        .user-role { background: rgba(255,255,255,.15); color:#fff; padding:.15rem .5rem; border-radius:12px; font-size:.75rem; font-weight:600; }
+
+        .user-dropdown { position:absolute; top:100%; right:0; background:#fff; border:1px solid #e9ecef; border-radius:.75rem; box-shadow: 0 10px 24px rgba(0,0,0,.08); min-width:180px; display:none; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display:flex; align-items:center; gap:.5rem; padding:.65rem .9rem; color:#495057; text-decoration:none; border-bottom:1px solid #f1f3f5; }
+        .user-dropdown a:hover { background-color: #f8f9fa; }
+
+        /* Sidebar */
+        .sidebar { position: fixed; top: 64px; left: 0; width: 280px; height: calc(100vh - 64px); background: #ffffff; border-right: 1px solid #e9ecef; padding: 1rem 0; overflow-y: auto; transition: transform .3s ease; z-index: 999; }
+        .sidebar.collapsed { transform: translateX(-280px); }
+        .sidebar-menu { list-style:none; padding:0; margin:0; }
+        .menu-item { margin-bottom:.35rem; }
+        .menu-link { display:flex; align-items:center; gap:.75rem; padding:.7rem 1.25rem; color:#6c757d; text-decoration:none; transition: background .2s ease, color .2s ease; border:none; background:none; width:100%; cursor:pointer; }
+        .menu-link:hover, .menu-link.active { background:#f3f7ff; color:#0d6efd; }
+        .menu-link i { width:20px; font-size:1.1rem; }
+        .menu-text { flex:1; text-align:left; }
+        .submenu-toggle {
+            transition: transform 0.3s ease;
+        }
+
+        .submenu-toggle.rotated {
+            transform: rotate(90deg);
+        }
+        .submenu { max-height:0; overflow:hidden; transition:max-height .3s ease; background:#f8f9fb; }
+        .submenu.expanded { max-height: 300px; }
+        .submenu-link { display:block; padding:.55rem 1.25rem .55rem 3rem; color:#6c757d; text-decoration:none; }
+        .submenu-link:hover { background-color: #e9ecef; color: #495057; }
+
+        /* Main Content */
+        .main-content { margin-left: 280px; margin-top: 64px; padding: 2rem; transition: margin-left .3s ease; }
+        .main-content.expanded { margin-left: 0; }
+
+        /* Dashboard Cards */
+        .dashboard-header { background: linear-gradient(135deg, #0d6efd 0%, #20c997 100%); color:#fff; padding: 2rem; border-radius: 15px; margin-bottom: 2rem; box-shadow: 0 8px 25px rgba(13,110,253,.3); }
+ 
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-280px);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .header-right .user-name {
+                display: none;
+            }
+        }
+
+        /* Welcome Content */
+        .welcome-content {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .welcome-content h2 {
+            color: #495057;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-content p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <button class="menu-toggle" onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+            <div class="logo">
+               
+                <span>InsurPilot</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="user-info" onclick="toggleUserDropdown()">
+                <i class="bi bi-person-circle"></i>
+                <span class="user-name" th:text="${session.currentSession.userName}"></span>
+                <span class="user-role">AGENT</span>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="/user/logout">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-item">
+                <a href="/user/agentDashboard" class="menu-link active">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+
+            <li class="menu-item">
+                <button class="menu-link" onclick="toggleSubmenu('policySubmenu')">
+                    <i class="bi bi-shield-check"></i>
+                    <span class="menu-text">Policy Management</span>
+                    <i class="bi bi-chevron-right submenu-toggle"></i>
+                </button>
+                <div class="submenu" id="policySubmenu">
+                    <a href="/policy/downloads" class="submenu-link">
+                        <i class="bi bi-check-circle"></i> Policy Downloads
+                    </a>
+                    <a href="/agent/policies/create" class="submenu-link">
+                        <i class="bi bi-plus-circle"></i> Create Policy
+                    </a>
+                    <a href="/policy/all" class="submenu-link">
+                        <i class="bi bi-list-ul"></i>All Policies
+                    </a>
+                </div>
+            </li>
+
+
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1>Welcome, <span th:text="${session.currentSession.userName}"></span>!</h1>
+            <p>Use the sidebar menu to access your features and manage your account.</p>
+            
+        </div>
+        <div class="row mt-3 g-3">
+            <div class="col-12 col-md-6">
+                <div class="p-3 bg-white rounded-3 text-dark d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted">Total Users</div>
+                        <div class="fs-4 fw-bold" th:text="${totalUsers}">0</div>
+                    </div>
+                    <div class="badge bg-primary-subtle text-primary p-3 rounded-circle"><i class="bi bi-people"></i></div>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="p-3 bg-white rounded-3 text-dark d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted">Total Policies</div>
+                        <div class="fs-4 fw-bold" th:text="${totalPolicies}">0</div>
+                    </div>
+                    <div class="badge bg-success-subtle text-success p-3 rounded-circle"><i class="bi bi-shield-check"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="mb-0">Policyholder Users</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">User ID</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${policyholders}">
+                                <td th:text="${u.userId}">1</td>
+                                <td th:text="${u.userName}">john_doe</td>
+                                <td th:text="${u.email}">john@example.com</td>
+                            </tr>
+                            <tr th:if="${policyholders == null or #lists.isEmpty(policyholders)}">
+                                <td colspan="3" class="text-center text-muted">No policyholder users found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        function toggleSubmenu(submenuId) {
+            const submenu = document.getElementById(submenuId);
+            const toggle = event.target.querySelector('.submenu-toggle');
+            
+            submenu.classList.toggle('expanded');
+            if (toggle) {
+                toggle.classList.toggle('rotated');
+            }
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userInfo = document.querySelector('.user-info');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userInfo.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Auto-close sidebar on mobile when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !menuToggle.contains(event.target) &&
+                !sidebar.classList.contains('collapsed')) {
+                toggleSidebar();
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('collapsed');
+                mainContent.classList.add('expanded');
+            } else {
+                sidebar.classList.remove('collapsed');
+                mainContent.classList.remove('expanded');
+            }
+        });
+    </script>
+</body>
+</html> 
